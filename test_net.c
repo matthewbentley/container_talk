@@ -6,15 +6,13 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include <fcntl.h>
 
 static int child(void *arg) {
-    struct utsname uts;
-    sethostname(arg, strlen(arg));
+    int fd;
 
-    uname(&uts);
-
-    printf("uts.nodename in child: %s\n", uts.nodename);
-    sleep(1);
+    fd = open((char *) arg, O_RDONLY);
+    setns(fd, 0);
 
     execlp("bash", "bash", (char *) NULL);
 
@@ -25,24 +23,20 @@ static int child(void *arg) {
 static char child_stack[STACK_SIZE];
 
 int main(int argc, char *argv[]) {
-    struct utsname uts;
-    int child_pid;
+    pid_t child_pid;
 
     if (argc < 2)
         return 1;
 
     child_pid = clone(child,
             child_stack + STACK_SIZE,
-            CLONE_NEWUTS | SIGCHLD,
+            SIGCHLD,
             argv[1]
     );
 
     printf("PID of child process is %ld\n", (long) child_pid);
 
-    uname(&uts);
-
     printf("PID of this program is %ld\n", (long) getpid());
-    printf("uts.namename: %s\n", uts.nodename);
 
     waitpid(child_pid, NULL, 0);
 
