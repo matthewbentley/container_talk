@@ -42,8 +42,10 @@ static char child_stack[STACK_SIZE];
 int main(int argc, char *argv[]) {
     pid_t child_pid;
     int fd;
+    int clone_flags;
     struct child_args cargs;
 
+    clone_flags = CLONE_NEWNS | CLONE_NEWPID | CLONE_NEWUTS | SIGCHLD;
 
     if (argc < 4)
         return 1;
@@ -51,13 +53,17 @@ int main(int argc, char *argv[]) {
     cargs.hostname = argv[1];
     cargs.chroot_to = argv[3];
 
-    fd = open(argv[2], O_RDONLY);
-    setns(fd, 0);
+    if (strlen(argv[2]) > 0) {
+        fd = open(argv[2], O_RDONLY);
+        setns(fd, 0);
+    } else {
+        clone_flags |= CLONE_NEWNET;
+    }
 
     child_pid = clone(
             child,
             child_stack + STACK_SIZE,
-            CLONE_NEWNS | CLONE_NEWPID | CLONE_NEWUTS | SIGCHLD, &cargs);
+            clone_flags, &cargs);
 
     printf("PID of child: %ld\n", (long) child_pid);
 
