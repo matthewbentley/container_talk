@@ -34,6 +34,10 @@
     - Then join with setns
     - `test_net.c`
     - `test_ip_proc_uts_net.c`
+ - Brief interlude on networking
+    - See `setup_nat.sh`
+    - I won’t cover bridging or nat, but this requires you to have a bridge 
+    called virbr0 with nat set up already
  - chroot
     - Finish a full container (debian based) with chroot
     - `test_mount.c`
