@@ -1,1 +1,1 @@
-CFLAGS=-Wall -Wextra -Wpedantic
+CFLAGS=-Wall -Wextra -Wpedantic -lcap -g
