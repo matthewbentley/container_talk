@@ -19,8 +19,32 @@
     - `join_uts.c`
  - PID
     - Used to isolate PID groups
-    - The first progess of a new PID group gets PID 1
+    - The first process of a new PID group gets PID 1
     - Its parent gets PID 0
+    - `test_pid.c`
+    - Problems with this, leading to:
+ - Mount
+    - `test_pid_proc.c`
+    - Add uts
+    - `test_pid_proc_uts.c`
+ - Net
+    - Isolates network stacks
+    - Includes interfaces, routing tables, and iptables
+    - Can create with `ip netns add name`, available in /run/netns/
+    - Then join with setns
+    - `test_net.c`
+    - `test_ip_proc_uts_net.c`
+ - chroot
+    - Finish a full container (debian based) with chroot
+    - `test_mount.c`
+    - `test_pid_proc_uts_net_newroot.c`
+ - user
+    - I couldn’t get these to work properly
+    - Should allow better access control, etc
+ - Capabilities
+    - Didn’t get into this, but it exists
+ - cgroups
+    - This also exists
 
 # TODO
 1. Fill out mount and mount/pid outline
