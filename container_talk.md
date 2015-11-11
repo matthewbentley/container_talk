@@ -3,6 +3,8 @@
  - Into to containers
     - Buzzwords
     - Overview
+    - Virtualization: Native - chroot - containers (openvz) - 
+    paravirtualization - full virtualization
  - Technology
     - Namespaces
         - Mount namespaces (CLONE_NEWNS)
@@ -40,11 +42,13 @@
     called virbr0 with nat set up already
  - chroot
     - Finish a full container (debian based) with chroot
-    - `test_mount.c`
+    - `test_chroot.c`
     - `test_pid_proc_uts_net_newroot.c`
  - user
     - I couldn’t get these to work properly
     - Should allow better access control, etc
+ - IPC
+    - I actually didn’t look into this at all
  - Capabilities
     - Didn’t get into this, but it exists
  - cgroups

@@ -1,47 +1,48 @@
 #define _GNU_SOURCE
-#include <sys/utsname.h>
-#include <sys/wait.h>
-#include <stdio.h>
 #include <sched.h>
-#include <stdlib.h>
-#include <string.h>
 #include <unistd.h>
-#include <fcntl.h>
+#include <stdlib.h>
+#include <sys/wait.h>
+#include <sys/mount.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <string.h>
+#include <signal.h>
+#include <stdio.h>
+#include <sys/syscall.h>
 
 static int child(void *arg) {
     arg = (void *) arg;
+    printf("My PID: %ld\n", (long) getpid());
+    printf("My PPID: %ld\n", (long) getppid());
 
-    execlp("bash", "bash", (char *) NULL);
+    mount("", "/", "dontcare", MS_REC|MS_SLAVE, NULL);
+    chroot("/opt/debian");
+    mount("proc", "/proc", "proc", 0, NULL);
+    chdir("/");
 
+    execlp("/bin/bash", "/bin/bash", (char *) NULL);
     return 0;
 }
 
 #define STACK_SIZE (1024 * 1024)
+
 static char child_stack[STACK_SIZE];
 
 int main(int argc, char *argv[]) {
     pid_t child_pid;
 
-    if (argc < 2)
+    if (argc < 1)
         return 1;
 
-    if (chroot(argv[1]))
-        printf("Oops\n");
+    child_pid = clone(
+            child,
+            child_stack + STACK_SIZE,
+            CLONE_NEWNS | SIGCHLD, argv[1]);
 
+    printf("PID of child: %ld\n", (long) child_pid);
 
-    execlp("bash", "bash", (char *) NULL);
-
-    //child_pid = clone(child,
-    //        child_stack + STACK_SIZE,
-    //        SIGCHLD,
-    //        argv[1]
-    //);
-
-    //printf("PID of child process is %ld\n", (long) child_pid);
-
-    //printf("PID of this program is %ld\n", (long) getpid());
-
-    //waitpid(child_pid, NULL, 0);
+    waitpid(child_pid, NULL, 0);
 
     return 0;
 }

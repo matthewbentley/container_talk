@@ -12,13 +12,12 @@
 #include <sys/syscall.h>
 
 static int child(void *arg) {
+    arg = (void *) arg;
     printf("My PID: %ld\n", (long) getpid());
     printf("My PPID: %ld\n", (long) getppid());
 
     mount("", "/", "dontcare", MS_REC|MS_SLAVE, NULL);
-    chroot("/opt/debian");
     mount("proc", "/proc", "proc", 0, NULL);
-    chdir("/");
 
     execlp("/bin/bash", "/bin/bash", (char *) NULL);
     return 0;
