@@ -28,9 +28,10 @@ static int child(void *arg) {
 
     mount("", "/", "dontcare", MS_REC|MS_SLAVE, NULL);
     chroot(cargs->chroot_to);
+    chdir("/");
+
     umount("/proc");
     mount("proc", "/proc", "proc", 0, NULL);
-    chdir("/");
 
     execlp("/bin/bash", "/bin/bash", (char *) NULL);
 
@@ -44,8 +45,7 @@ static char child_stack[STACK_SIZE];
 
 int main(int argc, char *argv[]) {
     pid_t child_pid;
-    int fd;
-    int clone_flags;
+    int fd, i, clone_flags;
     struct child_args cargs;
 
     cap_flag_t to_clear[CLEAR_LEN] = {
@@ -64,7 +64,6 @@ int main(int argc, char *argv[]) {
         CAP_SYS_TIME,
         CAP_SETPCAP,
     };
-    int i;
 
     for(i=0; i<CLEAR_LEN; i++) {
         if(to_clear[i]) {
