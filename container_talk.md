@@ -51,7 +51,4 @@
     - This also exists
 
 # TODO
-1. Fill out mount and mount/pid outline
-2. Write code for net namespace
-3. Write code for user namespace
-4. Write a FULL CONTAINER!!!
+SLIDES
